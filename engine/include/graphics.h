@@ -1,9 +1,10 @@
-#ifndef AC_GRAPHICS_H
-#define AC_GRAPHICS_H
+#ifndef GRAPHICS_H
+#define GRAPHICS_H
 #include <windows.h>
 #include <cstdint>
 #include <cstdio>
 #include <png.h>
+#include "file.h"
 
 struct win32_window_dimension {
     int width;
@@ -25,9 +26,12 @@ struct Texture {
     uint8_t* data; // Pointer to pixel data
 };
 
-bool LoadTexture(const char* filename, Texture* texture);
-void RenderTexture(win32_offscreen_buffer* buffer, Texture* texture, int x, int y);
-win32_window_dimension GetWindowDimension(HWND hWnd);
-void ClearBuffer(win32_offscreen_buffer* buffer);
+win32_window_dimension AEGetWindowDimension(HWND hWnd);
+void AEResizeDIBSection(win32_offscreen_buffer* buffer, int width, int height);
+void AEUpdateWindow(HDC hdc, int WindowWidth, int WindowHeight, win32_offscreen_buffer buffer);
+bool AELoadTexture(const char* filename, Texture* texture);
+bool AEFreeTexture(Texture* texture);
+void AEClearBuffer(win32_offscreen_buffer* buffer);
+void AERenderTexture(win32_offscreen_buffer* buffer, Texture* texture, int x, int y);
 
 #endif

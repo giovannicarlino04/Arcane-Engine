@@ -1,6 +1,6 @@
 #include "graphics.h"
 
-win32_window_dimension GetWindowDimension(HWND hWnd) {
+win32_window_dimension AEGetWindowDimension(HWND hWnd) {
     win32_window_dimension Result;
 
     RECT rect;
@@ -11,8 +11,50 @@ win32_window_dimension GetWindowDimension(HWND hWnd) {
     return 
     Result;
 }
-bool LoadTexture(const char* filename, Texture* texture) {
-    FILE* file = fopen(filename, "rb");
+
+void AEResizeDIBSection(win32_offscreen_buffer* buffer, int width, int height) {
+    if (buffer->memory) {
+        VirtualFree(buffer->memory, 0, MEM_RELEASE);
+    }
+    buffer->width = width;
+    buffer->height = height;
+    buffer->bytesPerPixel = 4;
+
+    buffer->info.bmiHeader.biSize = sizeof(buffer->info.bmiHeader);
+    buffer->info.bmiHeader.biWidth = buffer->width;
+    buffer->info.bmiHeader.biHeight = buffer->height;
+    buffer->info.bmiHeader.biPlanes = 1;
+    buffer->info.bmiHeader.biBitCount = 32;
+    buffer->info.bmiHeader.biCompression = BI_RGB;
+
+    int bitmapMemorySize = (buffer->width * buffer->height) * buffer->bytesPerPixel;
+    buffer->memory = VirtualAlloc(0, bitmapMemorySize, MEM_COMMIT, PAGE_READWRITE);
+
+    buffer->pitch = buffer->width * buffer->bytesPerPixel;
+}
+
+void AEUpdateWindow(HDC hdc, int WindowWidth, int WindowHeight, win32_offscreen_buffer buffer) {
+    float aspectRatio = (float)buffer.width / (float)buffer.height;
+
+    int targetWidth = WindowWidth;
+    int targetHeight = (int)(WindowWidth / aspectRatio);
+
+    if (targetHeight > WindowHeight) {
+        targetHeight = WindowHeight;
+        targetWidth = (int)(WindowHeight * aspectRatio);
+    }
+
+    int offsetX = (WindowWidth - targetWidth) / 2;
+    int offsetY = (WindowHeight - targetHeight) / 2;
+
+    StretchDIBits(hdc, offsetX, offsetY, targetWidth, targetHeight,
+        0, 0, buffer.width, buffer.height,
+        buffer.memory, &buffer.info, DIB_RGB_COLORS, SRCCOPY);
+}
+
+
+bool AELoadTexture(const char* filename, Texture* texture) {
+    FILE *file = AEReadEntireFile(filename);
     if (!file) {
         printf("Failed to open texture file: %s\n", filename);
         return false;
@@ -79,8 +121,11 @@ bool LoadTexture(const char* filename, Texture* texture) {
     return true;
 }
 
+bool AEFreeTexture(Texture* texture){
+    texture->data = nullptr;
+}
 
-void ClearBuffer(win32_offscreen_buffer* buffer) {
+void AEClearBuffer(win32_offscreen_buffer* buffer) {
     uint8_t* Row = (uint8_t*)buffer->memory;
     for (int32_t Y = 0; Y < buffer->height; Y++) {
         uint32_t* Pixel = (uint32_t*)Row;
@@ -90,7 +135,7 @@ void ClearBuffer(win32_offscreen_buffer* buffer) {
         Row += buffer->pitch;
     }
 }
-void RenderTexture(win32_offscreen_buffer* buffer, Texture* texture, int x, int y) {
+void AERenderTexture(win32_offscreen_buffer* buffer, Texture* texture, int x, int y) {
     uint8_t* Row = (uint8_t*)buffer->memory;
 
     for (int32_t Y = 0; Y < texture->height; Y++) {

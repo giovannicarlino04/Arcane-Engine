@@ -3,7 +3,7 @@
 #include <cstring>
 #include "sound.h"
 
-bool InitializeDirectSound(HWND hwnd, LPDIRECTSOUND8* pDirectSound) {
+bool AEInitializeDirectSound(HWND hwnd, LPDIRECTSOUND8* pDirectSound) {
     HRESULT result = DirectSoundCreate8(NULL, pDirectSound, NULL);
     if (FAILED(result)) {
         printf("Failed to initialize DirectSound!\n");
@@ -19,7 +19,7 @@ bool InitializeDirectSound(HWND hwnd, LPDIRECTSOUND8* pDirectSound) {
     return true;
 }
 
-bool CreateSecondaryBufferFromWAV(LPDIRECTSOUND8 DirectSound, wav_data* wave, LPDIRECTSOUNDBUFFER* secondaryBuffer) {
+bool AECreateSecondaryBufferFromWAV(LPDIRECTSOUND8 DirectSound, wav_data* wave, LPDIRECTSOUNDBUFFER* secondaryBuffer) {
     if (!DirectSound) {
         printf("DirectSound not initialized!\n");
         return false;
@@ -49,7 +49,7 @@ bool CreateSecondaryBufferFromWAV(LPDIRECTSOUND8 DirectSound, wav_data* wave, LP
     return true;
 }
 
-void FillSoundBufferWithWAVData(LPDIRECTSOUNDBUFFER secondaryBuffer, wav_data* wave) {
+void AEFillSoundBufferWithWAVData(LPDIRECTSOUNDBUFFER secondaryBuffer, wav_data* wave) {
     if (!secondaryBuffer || !wave->audioData) {
         printf("Invalid buffer or audio data!\n");
         return;
@@ -72,7 +72,7 @@ void FillSoundBufferWithWAVData(LPDIRECTSOUNDBUFFER secondaryBuffer, wav_data* w
     }
 }
 
-bool LoadWAVFile(const char* filename, wav_data* wave) {
+bool AELoadWAVFile(const char* filename, wav_data* wave) {
     FILE* file = fopen(filename, "rb");
     if (!file) {
         printf("Failed to open WAV file!\n");
@@ -104,7 +104,7 @@ bool LoadWAVFile(const char* filename, wav_data* wave) {
     return true;
 }
 
-void PlayWAVFile(LPDIRECTSOUNDBUFFER secondaryBuffer, wav_data* wave) {
+void AEPlayWAVFile(LPDIRECTSOUNDBUFFER secondaryBuffer, wav_data* wave) {
     if (!secondaryBuffer) {
         printf("Invalid sound buffer!\n");
         return;
@@ -121,20 +121,20 @@ void PlayWAVFile(LPDIRECTSOUNDBUFFER secondaryBuffer, wav_data* wave) {
     }
 }
 
-bool playSound(const char* soundName, HWND hwnd) {
+bool AEplaySound(const char* soundName, HWND hwnd) {
     LPDIRECTSOUNDBUFFER secondaryBuffer = nullptr;
     wav_data wave = {};
 
     LPDIRECTSOUND8 DirectSound = nullptr;
-    if (!InitializeDirectSound(hwnd, &DirectSound)) {
+    if (!AEInitializeDirectSound(hwnd, &DirectSound)) {
         printf("Failed to initialize DirectSound!\n");
         return false;
     }
 
-    if (LoadWAVFile(soundName, &wave)) {
-        if (CreateSecondaryBufferFromWAV(DirectSound, &wave, &secondaryBuffer)) {
-            FillSoundBufferWithWAVData(secondaryBuffer, &wave);
-            PlayWAVFile(secondaryBuffer, &wave);
+    if (AELoadWAVFile(soundName, &wave)) {
+        if (AECreateSecondaryBufferFromWAV(DirectSound, &wave, &secondaryBuffer)) {
+            AEFillSoundBufferWithWAVData(secondaryBuffer, &wave);
+            AEPlayWAVFile(secondaryBuffer, &wave);
         }
         printf("Sound played\n");
     }

@@ -1,6 +1,6 @@
 #include "helpers.h"
 
-void combinePath(char* destination, const char* path1, const char* path2)
+void AECombinePath(char* destination, const char* path1, const char* path2)
 {
     if(path1 == NULL && path2 == NULL) {
         strcpy(destination, "");;

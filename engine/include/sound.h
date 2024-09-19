@@ -1,5 +1,5 @@
-#ifndef AC_SOUND_H
-#define AC_SOUND_H
+#ifndef SOUND_H
+#define SOUND_H
 
 #include <windows.h>
 #include <dsound.h>

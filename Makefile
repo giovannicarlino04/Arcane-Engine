@@ -2,10 +2,10 @@
 CXX = g++
 CXXFLAGS = -I./engine/include/
 LDFLAGS = -luser32 -lgdi32 -ldsound -lxinput -lpng
-SRC = ./win32_engine_test.cpp ./engine/src/graphics.cpp ./engine/src/sound.cpp ./engine/src/helpers.cpp
-OBJ_DIR = ./engine/obj
-OBJ = $(patsubst ./engine/src/%.cpp,$(OBJ_DIR)/%.o,$(filter ./engine/src/%.cpp,$(SRC))) $(OBJ_DIR)/win32_engine_test.o
-OUT = win32_engine_test.exe
+SRC = ./arcane_engine_template.cpp ./engine/src/graphics.cpp ./engine/src/sound.cpp ./engine/src/helpers.cpp ./engine/src/file.cpp
+OBJ_DIR = ./obj
+OBJ = $(patsubst ./engine/src/%.cpp,$(OBJ_DIR)/%.o,$(filter ./engine/src/%.cpp,$(SRC))) $(OBJ_DIR)/arcane_engine_template.o
+OUT = arcane_engine_template.exe
 BUILD_DIR = build
 
 all: $(BUILD_DIR)/$(OUT)
@@ -19,11 +19,11 @@ $(OBJ_DIR)/%.o: ./engine/src/%.cpp
 	@mkdir -p $(OBJ_DIR)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-$(OBJ_DIR)/win32_engine_test.o: ./win32_engine_test.cpp
+$(OBJ_DIR)/arcane_engine_template.o: ./arcane_engine_template.cpp
 	@mkdir -p $(OBJ_DIR)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 clean:
-	rm -rf $(BUILD_DIR) $(OBJ_DIR)
+	rm -rf $(OUT) $(OBJ)
 
 .PHONY: all clean
