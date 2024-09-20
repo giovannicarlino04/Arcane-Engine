@@ -2,7 +2,7 @@
 CXX = g++
 CXXFLAGS = -I./engine/include/
 LDFLAGS = -luser32 -lgdi32 -ldsound -lxinput -lpng
-SRC = ./arcane_engine_template.cpp ./engine/src/graphics.cpp ./engine/src/sound.cpp ./engine/src/helpers.cpp ./engine/src/file.cpp
+SRC = ./arcane_engine_template.cpp ./engine/src/graphics.cpp ./engine/src/sound.cpp ./engine/src/helpers.cpp ./engine/src/file.cpp ./engine/src/math.cpp
 OBJ_DIR = ./obj
 OBJ = $(patsubst ./engine/src/%.cpp,$(OBJ_DIR)/%.o,$(filter ./engine/src/%.cpp,$(SRC))) $(OBJ_DIR)/arcane_engine_template.o
 OUT = arcane_engine_template.exe
