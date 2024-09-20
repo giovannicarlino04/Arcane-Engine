@@ -12,6 +12,7 @@ win32_window_dimension AEGetWindowDimension(HWND hWnd) {
     Result;
 }
 
+
 void AEResizeDIBSection(win32_offscreen_buffer* buffer, int width, int height) {
     if (buffer->memory) {
         VirtualFree(buffer->memory, 0, MEM_RELEASE);
@@ -52,6 +53,17 @@ void AEUpdateWindow(HDC hdc, int WindowWidth, int WindowHeight, win32_offscreen_
         buffer.memory, &buffer.info, DIB_RGB_COLORS, SRCCOPY);
 }
 
+void AEdrawRectangle(int x, int y, int width, int height, uint32_t color, win32_offscreen_buffer globalBackBuffer) {
+    for (int row = y; row < y + height; ++row) {
+        for (int col = x; col < x + width; ++col) {
+            if (row >= 0 && row < globalBackBuffer.height && col >= 0 && col < globalBackBuffer.width) {
+                uint32_t* pixel = (uint32_t*)((uint8_t*)globalBackBuffer.memory +
+                                              row * globalBackBuffer.pitch + col * sizeof(uint32_t));
+                *pixel = color;
+            }
+        }
+    }
+}
 
 bool AELoadTexture(const char* filename, Texture* texture) {
     FILE *file = AEReadEntireFile(filename);
@@ -123,6 +135,7 @@ bool AELoadTexture(const char* filename, Texture* texture) {
 
 bool AEFreeTexture(Texture* texture){
     texture->data = nullptr;
+    return true;
 }
 
 void AEClearBuffer(win32_offscreen_buffer* buffer) {
@@ -135,6 +148,7 @@ void AEClearBuffer(win32_offscreen_buffer* buffer) {
         Row += buffer->pitch;
     }
 }
+
 void AERenderTexture(win32_offscreen_buffer* buffer, Texture* texture, int x, int y) {
     uint8_t* Row = (uint8_t*)buffer->memory;
 
