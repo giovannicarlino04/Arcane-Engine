@@ -1,0 +1,19 @@
+# DLL and build artifacts
+arcane_engine.dll
+arcane_engine.lib
+arcane_engine.exp
+
+# Object files
+engine/src/*.o
+engine/src/*.obj
+
+# Dependency and log files
+*.log
+
+# Editor/OS files
+.DS_Store
+Thumbs.db
+
+# Batch/temporary files
+*.bak
+*.tmp

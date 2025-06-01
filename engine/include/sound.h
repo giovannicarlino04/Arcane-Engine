@@ -6,36 +6,48 @@
 #include <stdint.h>
 #include "helpers.h"
 
-// WAV file header structures
-#pragma pack(push, 1) // Ensure no padding
+#ifdef BUILD_ARCANE_DLL
+#define ARCANE_API __declspec(dllexport)
+#else
+#define ARCANE_API __declspec(dllimport)
+#endif
+
+#pragma pack(push, 1)
 struct wav_header {
-    char chunkID[4];        // "RIFF"
-    uint32_t chunkSize;     // File size - 8
-    char format[4];         // "WAVE"
-    char subchunk1ID[4];    // "fmt "
-    uint32_t subchunk1Size; // Size of fmt
-    uint16_t audioFormat;    // Audio format (PCM = 1)
-    uint16_t numChannels;    // Number of channels
-    uint32_t sampleRate;     // Sample rate
-    uint32_t byteRate;       // Byte rate
-    uint16_t blockAlign;     // Block align
-    uint16_t bitsPerSample;  // Bits per sample
-    char subchunk2ID[4];     // "data"
-    uint32_t subchunk2Size;  // Size of data
+    char chunkID[4];
+    uint32_t chunkSize;
+    char format[4];
+    char subchunk1ID[4];
+    uint32_t subchunk1Size;
+    uint16_t audioFormat;
+    uint16_t numChannels;
+    uint32_t sampleRate;
+    uint32_t byteRate;
+    uint16_t blockAlign;
+    uint16_t bitsPerSample;
+    char subchunk2ID[4];
+    uint32_t subchunk2Size;
 };
 #pragma pack(pop)
 
 struct wav_data {
     wav_header header;
-    uint8_t* audioData; // Pointer to audio data
+    uint8_t* audioData;
 };
 
-// Function declarations
-bool InitializeDirectSound(HWND hwnd, LPDIRECTSOUND8* pDirectSound);
-bool CreateSecondaryBufferFromWAV(LPDIRECTSOUND8 DirectSound, wav_data* wave, LPDIRECTSOUNDBUFFER* secondaryBuffer);
-void FillSoundBufferWithWAVData(LPDIRECTSOUNDBUFFER secondaryBuffer, wav_data* wave);
-bool LoadWAVFile(const char* filename, wav_data* wave);
-void PlayWAVFile(LPDIRECTSOUNDBUFFER secondaryBuffer);
-bool playSound(const char* soundName, HWND hwnd);
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-#endif // AC_SOUND_H
+ARCANE_API bool AEInitializeDirectSound(HWND hwnd, LPDIRECTSOUND8* pDirectSound);
+ARCANE_API bool AECreateSecondaryBufferFromWAV(LPDIRECTSOUND8 DirectSound, wav_data* wave, LPDIRECTSOUNDBUFFER* secondaryBuffer);
+ARCANE_API void AEFillSoundBufferWithWAVData(LPDIRECTSOUNDBUFFER secondaryBuffer, wav_data* wave);
+ARCANE_API bool AELoadWAVFile(const char* filename, wav_data* wave);
+ARCANE_API void AEPlayWAVFile(LPDIRECTSOUNDBUFFER secondaryBuffer, wav_data* wave);
+ARCANE_API bool AEplaySound(const char* soundName, HWND hwnd);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif // SOUND_H
